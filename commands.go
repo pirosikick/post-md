@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"github.com/codegangsta/cli"
+	"net/http"
+	"net/http/httputil"
 )
 
 var Commands = []cli.Command{
@@ -17,6 +19,16 @@ var commandPost = cli.Command{
 }
 
 func doPost(c *cli.Context) {
-	filePath := c.Args().Get(0)
-	fmt.Println(filePath)
+	token := c.Args().Get(0)
+	fmt.Println(token)
+
+	url := "https://qiita.com/api/v2/authenticated_user/items"
+	req, _ := http.NewRequest("GET", url, nil)
+	req.Header.Set("Authorization", "Bearer "+token)
+
+	client := new(http.Client)
+	resp, _ := client.Do(req)
+
+	dumpResp, _ := httputil.DumpResponse(resp, true)
+	fmt.Printf("%s", dumpResp)
 }
