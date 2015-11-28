@@ -1,11 +1,21 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/codegangsta/cli"
-	"net/http"
-	"net/http/httputil"
+	"io/ioutil"
+	//	"net/http"
+	//	"net/http/httputil"
 )
+
+type QiitaConfig struct {
+	Token string
+}
+
+type Config struct {
+	Qiita QiitaConfig
+}
 
 var Commands = []cli.Command{
 	commandPost,
@@ -19,16 +29,19 @@ var commandPost = cli.Command{
 }
 
 func doPost(c *cli.Context) {
-	token := c.Args().Get(0)
-	fmt.Println(token)
+	configStr, _ := ioutil.ReadFile("./.postmdrc")
 
-	url := "https://qiita.com/api/v2/authenticated_user/items"
-	req, _ := http.NewRequest("GET", url, nil)
-	req.Header.Set("Authorization", "Bearer "+token)
+	var config Config
+	json.Unmarshal(configStr, &config)
 
-	client := new(http.Client)
-	resp, _ := client.Do(req)
-
-	dumpResp, _ := httputil.DumpResponse(resp, true)
-	fmt.Printf("%s", dumpResp)
+	fmt.Printf("%#v\n", config)
+	//	url := "https://qiita.com/api/v2/authenticated_user/items"
+	//	req, _ := http.NewRequest("GET", url, nil)
+	//	req.Header.Set("Authorization", "Bearer "+token)
+	//
+	//	client := new(http.Client)
+	//	resp, _ := client.Do(req)
+	//
+	//	dumpResp, _ := httputil.DumpResponse(resp, true)
+	//	fmt.Printf("%s", dumpResp)
 }
